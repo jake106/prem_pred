@@ -1,12 +1,14 @@
-[![Contributors][contributors-shield]][https://github.com/jake106/prem_pred/graphs/contributers]
-[![Issues][issues-shield]][https://github.com/jake106/prem_pred/issues]
-[![GNU][license-shield]][https://github.com/jake106/prem_pred/LICENSE.txt]
-[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/jake-a-649163195/]
+<a id="readme-top"></a>
+
+[![Contributors][contributors-shield]][contributers-url]
+[![Issues][issues-shield]][issues-url]
+[![GNU][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <br />
 <div align="center">
   <a href="https://github.com/jake106/prem_pred">
-    <img src="images/logo.pdf" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">Prem Predictor</h3>
