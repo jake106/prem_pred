@@ -1,6 +1,6 @@
 <a id="readme-top"></a>
 
-[![Contributors][contributors-shield]][contributers-url]
+[![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
 [![GNU][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
@@ -8,7 +8,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/jake106/prem_pred">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="100" height="100">
   </a>
 
 <h3 align="center">Prem Predictor</h3>
