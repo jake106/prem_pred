@@ -8,6 +8,7 @@ import models
 import fitting
 import forecast
 import plotting
+import examples
 
 
 def get_args()->argparse.Namespace:
@@ -36,11 +37,11 @@ def main():
     '''A number of simple models to predict the results of football matches.'''
     args = get_args()
     print(args)
-    fitset, simset, team_map = dutils.create_datasets(dt.date(2024, 6, 6))
+    fitset, simset, team_map = dutils.create_datasets(dt.date(2024, 12, 17))
     if args.plot:
         plotting.gaussian_plot(fitset)
         plotting.plot_seasonality(fitset)
-    if not args.forecast:
+    if not args.forecast and not args.simulate:
         if args.simple or args.all:
             print('')
             print('# Simple Model:')
@@ -61,14 +62,25 @@ def main():
             simset = forecast.compute_win_loss_draw_prob(simset, 'seasonal', team_map)
         else:
             raise IOError('Model type must be specified with forecast flag')
-        forecast.predict_league_table(simset)
+        print('Projected league table:')
+        print(forecast.predict_league_table(simset, fitset))
         if args.evaluate:
             forecast.evaluate_pred(simset)
     if args.simulate or args.all:
         print('')
         print('# Simulation:')
         print('')
-        raise NotImplementedError('Model simulations not yet implemented')
+        N_sim = 10000
+        if args.simple:
+            sim_tables = forecast.simulate_league(simset, fitset, 'simple', team_map, N_sim)
+        elif args.extended:
+            sim_tables = forecast.simulate_league(simset, fitset, 'seasonal', team_map, N_sim)
+        else:
+            raise IOError('Model type must be specified with simulate flag')
+        # Here we demonstrate the probability of Aston Villa finishing in the top 5 of the 
+        # Premier League using the simulated league tables
+        examples.aston_villa(sim_tables)
+
 
 
 if __name__ == '__main__':

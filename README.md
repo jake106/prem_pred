@@ -98,7 +98,26 @@ Note: Currently step 1 is not required, but as the roadmap progresses it will be
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-raise NotImplementedError "This is on the roadmap"
+Currently all capabilities of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This can be called as follows:
+
+```bash
+usage: main.py [-h] [--plot] [--simple] [--extended] [--forecast] [--simulate] [--all] [--evaluate]
+
+Run all models.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --plot      Perform some EDA - plot a few features of the dataset.
+  --simple    Just train and evaluate the simple model.
+  --extended  Just train and evaluate the model with seasonal extensions.
+  --forecast  Forecast the results of a simulation set of data using pre-trained models. Model type
+              must be specified with forecast flag
+  --simulate  Simulate a league table using pre-trained models.
+  --all       Run entire sequence.
+  --evaluate  When actual results of prediction dataset available, run evaluation
+```
+
+To run the example (predicting the probability of Aston Villa finishing in the top 5 in the 24/25 Premier League), run `main.py` with the `--simulate` flag.
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -109,12 +128,11 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
+- [ ] Add sanity check to extended model
+- [ ] Add season start and end dates to better capture proportion of way through a season a match is played
 - [ ] Implement prediction capabilities for single matches
 - [ ] Implement backtesting framework
-- [ ] Automate fetching latest match data
-- [ ] Add capability to simulate entire league based on predictions
-    - [ ] Find data source for matches to be played
-    - [ ] Implement Monte-Carlo simulations based on match result probabilities 
+- [ ] Automate fetching latest match data and future fixtures
 - [ ] Improve documentation
     - [ ] Finish README
         - [ ] Add examples for usage
@@ -163,7 +181,7 @@ Distributed under the GNU General Public License. See `LICENSE.txt` for more inf
 
 * [README Template](https://github.com/othneildrew/Best-README-Template/tree/main?tab=readme-ov-file)
 * [Double-poisson football score model](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9574.1982.tb00782.x)
-* []()
+* [Historical football data](https://www.football-data.co.uk/englandm.php)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

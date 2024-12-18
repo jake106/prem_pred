@@ -3,7 +3,7 @@ import pandas as pd
 import csv
 import datetime as dt
 import os
-from scipy.stats import skellam
+from scipy.stats import skellam, poisson
 
 import plotting
 
@@ -23,7 +23,7 @@ def create_datasets(split_date: dt.date)->(pd.DataFrame, pd.DataFrame):
     df.Date = [dt.datetime.strptime(d, '%Y-%m-%d').date() for d in df.Date]
     # Define training and testing dates
     fitset = df[df.Date <= split_date]
-    simset = df[(df.Date > split_date) & (df.Date <= dt.date(2024, 12, 23))]
+    simset = df[(df.Date > split_date) & (df.Date <= dt.date(2025, 12, 23))]
     return fitset, simset, team_map 
 
 
@@ -84,12 +84,7 @@ def add_season_prop(df: pd.DataFrame)->pd.DataFrame:
     start_date = df.Date.min().year
     end_date = df.Date.max().year
     if start_date == end_date:
-        if df.Date.max().month < 6:
-            # Current season started last year
-            season = [dt.date(start_date - 1, 8, 1), dt.date(start_date, 7, 31)]
-        else:
-            # Current season ends next year
-            season = [dt.date(start_date, 8, 1), dt.date(start_date + 1, 7, 31)]
+        season = calc_season_bounds(df, start_date)
         return single_season_prop(df, season)
     df_out = pd.DataFrame({})
     for j in range(start_date, end_date):
@@ -126,6 +121,10 @@ def get_global_params(fitset):
     '''
     Extract Poisson model global parameter starting values from training data.
     '''
+    fitset = fitset.dropna(inplace=False)
+    # If there are only nan values we are predicting so this will be overwritten anyway
+    if not len(fitset.index):
+        return 1, 1
     tg = fitset['TotG'].mean()
     ha = fitset['HA'].mean()
     gamma = np.log(np.sqrt(tg**2 - ha**2) / 2)
@@ -208,5 +207,58 @@ def calc_exp_points(
     home_pts = 3 * home_win_prob + draw_prob
     away_pts = 3 * away_win_prob + draw_prob
     return home_pts, away_pts
+
+
+def calc_season_bounds(df: pd.DataFrame, start_date: int)->[dt.date, dt.date]:
+    '''
+    Calculates beginnning and end of a given season
+    '''
+    if df.Date.max().month < 6:
+        # Current season started last year
+        season = [dt.date(start_date - 1, 8, 1), dt.date(start_date, 7, 31)]
+    else:
+        # Current season ends next year
+        season = [dt.date(start_date, 8, 1), dt.date(start_date + 1, 7, 31)]
+    return season
+
+
+def get_true_points(df: pd.DataFrame)->(np.ndarray, np.ndarray):
+    '''
+    Calculates actual points for the most recent season in a historical dataframe
+    '''
+    pt_map = pd.DataFrame({'FTR': ['H', 'A', 'D'], 'home_pts': [3, 0, 1], 'away_pts': [0, 3, 1]})
+    df = df.merge(pt_map, on = 'FTR', how='left')
+    return df.home_pts.to_numpy(), df.away_pts.to_numpy()
+
+
+def get_historic_pts(historical: pd.DataFrame)->pd.DataFrame:
+    pd.options.mode.chained_assignment = None
+    start_date = historical.Date.max().year
+    season = calc_season_bounds(historical, start_date)
+    historical = historical[historical.Date > season[0]]
+    historical['Home_pts'], historical['Away_pts'] = get_true_points(historical)
+    return historical
+
+
+def winner_from_goals(df: pd.DataFrame)->pd.DataFrame:
+    '''
+    Fills in 'FTR' column of dataframe from simulated match results
+    '''
+    df['FTR'] = df['FTR'].mask(df['HG'] == df['AG'], 'D')
+    df['FTR'] = df['FTR'].mask(df['HG'] > df['AG'], 'H')
+    df['FTR'] = df['FTR'].mask(df['HG'] < df['AG'], 'A')
+    return df
+
+
+def simulate_match_scores(
+        home_score_rate: np.ndarray,
+        away_score_rate: np.ndarray)->(np.ndarray, np.ndarray):
+    '''
+    Simulates the results of matches using independent Poisson distributions
+    with provided home and away scoring rates.
+    '''
+    home_scores = poisson.rvs(home_score_rate)
+    away_scores = poisson.rvs(away_score_rate)
+    return home_scores, away_scores
 
 

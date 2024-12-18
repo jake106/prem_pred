@@ -6,6 +6,23 @@ import utils.data_utils as dutils
 import fitting
 
 
+def import_model(
+        data: pd.DataFrame,
+        modeltype: str, 
+        team_map: dict)->models.PoissonModel:
+    '''
+    Imports the relevant model for either forecast or simulation. 
+    '''
+    if not modeltype in ['simple', 'seasonal']:
+        raise ValueError('Model type must be either "simple" or "seasonal".')
+
+    if modeltype == 'simple':
+        model = models.SimplePoisson(data, team_map).from_saved()
+    elif modeltype == 'seasonal':
+        model = models.ExtendedSeasonalPoisson(data, team_map).from_saved()
+    return model
+
+
 def compute_win_loss_draw_prob(
         data: pd.DataFrame,
         modeltype: str, 
@@ -21,13 +38,7 @@ def compute_win_loss_draw_prob(
     Returns:
     Modifies and returns input dataframe with probabilities included
     '''
-    if not modeltype in ['simple', 'seasonal']:
-        raise ValueError('Model type must be either "simple" or "seasonal".')
-
-    if modeltype == 'simple':
-        model = models.SimplePoisson(data, team_map).from_saved()
-    elif modeltype == 'seasonal':
-        model = models.ExtendedSeasonalPoisson(data, team_map).from_saved()
+    model = import_model(data, modeltype, team_map)
 
     data['Home_rate'], data['Away_rate'] = model.scoring_rates()
     data['Home_prob'], data['Draw_prob'], data['Away_prob'] = dutils.skellam_dist(data.Home_rate,
@@ -35,26 +46,62 @@ def compute_win_loss_draw_prob(
     return data
 
 
-def predict_league_table(data: pd.DataFrame):
+def build_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.DataFrame:
+    '''
+    Build league table from match results.
+    '''
+    cols = ['Home_pts', 'Away_pts', 'HomeTeam', 'AwayTeam']
+    data = pd.concat([historical[cols], data[cols]])
+    data_home_pts = data.groupby(['HomeTeam'])['Home_pts'].sum()
+    data_away_pts = data.groupby(['AwayTeam'])['Away_pts'].sum()
+    data_proj_total_pts = data_home_pts + data_away_pts
+    league_table = data_proj_total_pts.sort_values(ascending = False)
+    return league_table
+
+
+def predict_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.Series:
     '''
     Predict the league table for the latest season.
 
     Params:
     data - match data to calculate league table for - can be combination of matches that have occured
     and those in the future. Must have model predictions.
-
-    TODO - add ability to incorperate recent match results into model to improve prediction as
-           matches occur.
+    historical - historical data to fill in entire league table if used halfway through season.
     '''
+    # Get only current league from histroical data
+    historical = dutils.get_historic_pts(historical)
     data['Home_pts'], data['Away_pts'] = dutils.calc_exp_points(data.Home_prob,
                                            data.Draw_prob,
                                            data.Away_prob)
-    data_home_pts = data.groupby(['HomeTeam'])['Home_pts'].sum()
-    data_away_pts = data.groupby(['AwayTeam'])['Away_pts'].sum()
-    data_proj_total_pts = data_home_pts + data_away_pts
-    proj_league_table = data_proj_total_pts.sort_values(ascending = False)
-    print('Projected league table:')
-    print(proj_league_table)
+    # Merge prediction data with historical
+    proj_league_table = build_league_table(data, historical)
+    return proj_league_table
+
+
+def simulate_league(
+        data: pd.DataFrame,
+        historical: pd.DataFrame,
+        modeltype: str,
+        team_map: dict,
+        N_sim: int)->list:
+    '''
+    Simulated N_sim number of leagues based on combining historical data from current league with
+    future fixture schedules.
+    '''
+    model = import_model(data, modeltype, team_map)
+
+    historical = dutils.get_historic_pts(historical)
+    data['Home_rate'], data['Away_rate'] = model.scoring_rates()
+    simulated_tables = []
+    for n in range(N_sim):
+        home_rate = data.Home_rate.to_numpy()
+        away_rate = data.Away_rate.to_numpy()
+        data['HG'], data['AG'] = dutils.simulate_match_scores(home_rate, away_rate)
+        data = dutils.winner_from_goals(data)
+        data['Home_pts'], data['Away_pts'] = dutils.get_true_points(data)
+        sim_league_table = build_league_table(data, historical)
+        simulated_tables += [sim_league_table]
+    return simulated_tables
 
 
 def evaluate_pred(data: pd.DataFrame):
