@@ -96,7 +96,7 @@ Note: Currently step 1 is not required, but as the roadmap progresses it will be
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-NOTE: Currently there is no script to automate fetching the data (there soon will be!), so data must be downloaded manually from [football-data.co.uk](https://www.football-data.co.uk/englandm.php), and placed in the `daat` directory.
+NOTE: Currently there is no script to automate fetching the data (there soon will be!), so data must be downloaded manually from [football-data.co.uk](https://www.football-data.co.uk/englandm.php), and placed in the `data` directory.
 
 Currently all functions of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This can be called as follows:
 
