@@ -6,7 +6,7 @@ import datetime as dt
 import utils.data_utils as dutils
 import models
 import fitting
-import forecast
+import prediction
 import plotting
 import examples
 
@@ -57,24 +57,24 @@ def main():
         print('# Forecasting:')
         print('')
         if args.simple:
-            simset = forecast.compute_win_loss_draw_prob(simset, 'simple', team_map)
+            simset = prediction.compute_win_loss_draw_prob(simset, 'simple', team_map)
         elif args.extended:
-            simset = forecast.compute_win_loss_draw_prob(simset, 'seasonal', team_map)
+            simset = prediction.compute_win_loss_draw_prob(simset, 'seasonal', team_map)
         else:
             raise IOError('Model type must be specified with forecast flag')
         print('Projected league table:')
-        print(forecast.predict_league_table(simset, fitset))
+        print(prediction.predict_league_table(simset, fitset))
         if args.evaluate:
-            forecast.evaluate_pred(simset)
+            prediction.evaluate_pred(simset)
     if args.simulate or args.all:
         print('')
         print('# Simulation:')
         print('')
         N_sim = 10000
         if args.simple:
-            sim_tables = forecast.simulate_league(simset, fitset, 'simple', team_map, N_sim)
+            sim_tables = prediction.simulate_league(simset, fitset, 'simple', team_map, N_sim)
         elif args.extended:
-            sim_tables = forecast.simulate_league(simset, fitset, 'seasonal', team_map, N_sim)
+            sim_tables = prediction.simulate_league(simset, fitset, 'seasonal', team_map, N_sim)
         else:
             raise IOError('Model type must be specified with simulate flag')
         # Here we demonstrate the probability of Aston Villa finishing in the top 5 of the 

@@ -14,7 +14,7 @@
 <h3 align="center">Prem Predictor</h3>
 
   <p align="center">
-    A currently very basic repository of models designed to predict the results of football matches in the English Premier League. Currently lacking in a number of essential features, but I'm working on it!
+    A very basic repository of models designed to predict the results of football matches in the English Premier League. Currently lacking in a number of essential features, but I'm working on it!
     <br />
     <a href="https://github.com/jake106/prem_pred"><strong>Explore the docs »</strong></a>
     <br />
@@ -51,9 +51,7 @@
 
 ## About The Project
 
-Football games are unpredictable, there is no way to predict the outcome of multiple games over an entire league; but what if we could at least do an ok job? If the bookmakers can do it, why can't we?
-
-This repository seeks to answer these questions, through the application of a number of different types of model designed to predict the results of football matches, loosely based on the literature.
+Football games are unpredictable, there is no way to accurately predict the outcome of multiple games over an entire league, unexpected results will always happen, and thats what makes it such a joy to watch! But what if we could at least do an ok job at prediction? Well the bookmakers can, so let's give it a try.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -98,7 +96,9 @@ Note: Currently step 1 is not required, but as the roadmap progresses it will be
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Currently all capabilities of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This can be called as follows:
+NOTE: Currently there is no script to automate fetching the data (there soon will be!), so data must be downloaded manually from [football-data.co.uk](https://www.football-data.co.uk/englandm.php), and placed in the `daat` directory.
+
+Currently all functions of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This can be called as follows:
 
 ```bash
 usage: main.py [-h] [--plot] [--simple] [--extended] [--forecast] [--simulate] [--all] [--evaluate]
@@ -119,24 +119,22 @@ optional arguments:
 
 To run the example (predicting the probability of Aston Villa finishing in the top 5 in the 24/25 Premier League), run `main.py` with the `--simulate` flag.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Add sanity check to extended model
+- [ ] Add sanity check to extended model - extended model performance is lower than expected
+- [ ] Add weights to training data such that previous team performance matters much less than performance in the current league
 - [ ] Add season start and end dates to better capture proportion of way through a season a match is played
-- [ ] Implement prediction capabilities for single matches
+- [ ] Implement the ability to simulate a match result based on a simple query
 - [ ] Implement backtesting framework
 - [ ] Automate fetching latest match data and future fixtures
 - [ ] Improve documentation
     - [ ] Finish README
-        - [ ] Add examples for usage
-    - [ ] Improve logo
+        - [ ] Add more examples for usage as features are added
+    - [ ] Improve logo (it's currently terrible)
 
 See the [open issues](https://github.com/jake106/prem_pred/issues) for a full list of proposed features (and known issues).
 

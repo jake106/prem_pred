@@ -6,7 +6,7 @@ import utils.data_utils as dutils
 
 def aston_villa(sim_tables):
     '''
-    Simulated the probability of Aston Villa finishing in the top 5 of the 2024/2025
+    Simulates the probability of Aston Villa finishing in the top 5 of the 2024/2025
     Premier League based on data up to and including 17/12/24.
     '''
     villa_top5 = 0

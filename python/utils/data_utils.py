@@ -211,7 +211,7 @@ def calc_exp_points(
 
 def calc_season_bounds(df: pd.DataFrame, start_date: int)->[dt.date, dt.date]:
     '''
-    Calculates beginnning and end of a given season
+    Calculates beginnning and end dates for a given season.
     '''
     if df.Date.max().month < 6:
         # Current season started last year
@@ -224,7 +224,7 @@ def calc_season_bounds(df: pd.DataFrame, start_date: int)->[dt.date, dt.date]:
 
 def get_true_points(df: pd.DataFrame)->(np.ndarray, np.ndarray):
     '''
-    Calculates actual points for the most recent season in a historical dataframe
+    Calculates actual points for the most recent season from historical data.
     '''
     pt_map = pd.DataFrame({'FTR': ['H', 'A', 'D'], 'home_pts': [3, 0, 1], 'away_pts': [0, 3, 1]})
     df = df.merge(pt_map, on = 'FTR', how='left')
@@ -232,6 +232,10 @@ def get_true_points(df: pd.DataFrame)->(np.ndarray, np.ndarray):
 
 
 def get_historic_pts(historical: pd.DataFrame)->pd.DataFrame:
+    '''
+    Adds points awarded per match for most recent/current Premier League season to historical
+    data.
+    '''
     pd.options.mode.chained_assignment = None
     start_date = historical.Date.max().year
     season = calc_season_bounds(historical, start_date)
@@ -242,7 +246,8 @@ def get_historic_pts(historical: pd.DataFrame)->pd.DataFrame:
 
 def winner_from_goals(df: pd.DataFrame)->pd.DataFrame:
     '''
-    Fills in 'FTR' column of dataframe from simulated match results
+    Fills in full time result column of dataframe from simulated match results, based on simulated
+    home and away scores.
     '''
     df['FTR'] = df['FTR'].mask(df['HG'] == df['AG'], 'D')
     df['FTR'] = df['FTR'].mask(df['HG'] > df['AG'], 'H')
@@ -254,8 +259,8 @@ def simulate_match_scores(
         home_score_rate: np.ndarray,
         away_score_rate: np.ndarray)->(np.ndarray, np.ndarray):
     '''
-    Simulates the results of matches using independent Poisson distributions
-    with provided home and away scoring rates.
+    Simulates the results of matches by drawing random variables from independent
+    Poisson distributions with provided home and away scoring rates.
     '''
     home_scores = poisson.rvs(home_score_rate)
     away_scores = poisson.rvs(away_score_rate)

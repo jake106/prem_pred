@@ -11,7 +11,8 @@ def import_model(
         modeltype: str, 
         team_map: dict)->models.PoissonModel:
     '''
-    Imports the relevant model for either forecast or simulation. 
+    Imports the relevant model for either forecast or simulation. Returns model applied to data
+    based on the model type string.
     '''
     if not modeltype in ['simple', 'seasonal']:
         raise ValueError('Model type must be either "simple" or "seasonal".')
@@ -32,7 +33,7 @@ def compute_win_loss_draw_prob(
     skellam distribution
 
     Params:
-    data - matches to calculate for
+    data - matches to calculate probabilities on
     modeltype - model type to use (either 'simple' or 'seasonal')
 
     Returns:
@@ -46,9 +47,16 @@ def compute_win_loss_draw_prob(
     return data
 
 
-def build_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.DataFrame:
+def build_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.Series:
     '''
-    Build league table from match results.
+    Construct league table from forecasted or simulated match results.
+
+    Params:
+    data - match data with simulated match results.
+    historical - data from past matches in current season.
+
+    Returns:
+    league_table - Series of teams in league ordered by predicted points at end of season.
     '''
     cols = ['Home_pts', 'Away_pts', 'HomeTeam', 'AwayTeam']
     data = pd.concat([historical[cols], data[cols]])
@@ -61,12 +69,14 @@ def build_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.DataFra
 
 def predict_league_table(data: pd.DataFrame, historical: pd.DataFrame)->pd.Series:
     '''
-    Predict the league table for the latest season.
+    Forecast the league table for the latest season.
 
     Params:
-    data - match data to calculate league table for - can be combination of matches that have occured
-    and those in the future. Must have model predictions.
+    data - match data to calculate league table for including model predictions.
     historical - historical data to fill in entire league table if used halfway through season.
+
+    Returns:
+    proj_league_table - Forecasted league table ordered by predicted points.
     '''
     # Get only current league from histroical data
     historical = dutils.get_historic_pts(historical)
@@ -85,8 +95,19 @@ def simulate_league(
         team_map: dict,
         N_sim: int)->list:
     '''
-    Simulated N_sim number of leagues based on combining historical data from current league with
+    Simulate N_sim number of leagues based on combining historical data from current league with
     future fixture schedules.
+
+    Params:
+    data - Future fixtures to simulate the results of.
+    historical - Past games in dataset to fill out completed matches in current league.
+    modeltype - String describing type of model to use for simulation.
+    team_map - Map of team names to team index.
+    N_sim - Number of simulations to run.
+
+    Returns:
+    simulated_tables - list of length N_sim contatining all simulated league tables ordered by
+                       points.
     '''
     model = import_model(data, modeltype, team_map)
 
@@ -106,11 +127,12 @@ def simulate_league(
 
 def evaluate_pred(data: pd.DataFrame):
     '''
-    Evaluate the predictions given by a certain model.
+    Evaluate the forecasts provided by a given Poisson model. Computes RMSE and RAE to evaluate
+    total goal predictions, and the Brier score to evaluate predicted match results.
 
     Params:
     data - Match data with model predictions included as well as actual results to evaluate
-           model accuracy.
+           model performance.
     '''
     observed_totg = data['TotG'].to_numpy()
     expected_totg = data['Home_rate'].to_numpy() + data['Away_rate'].to_numpy()
