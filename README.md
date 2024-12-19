@@ -125,6 +125,7 @@ To run the example (predicting the probability of Aston Villa finishing in the t
 <!-- ROADMAP -->
 ## Roadmap
 
+# Version 0
 - [ ] Add sanity check to extended model - extended model performance is lower than expected
 - [ ] Add weights to training data such that previous team performance matters much less than performance in the current league
 - [ ] Add season start and end dates to better capture proportion of way through a season a match is played
@@ -135,6 +136,11 @@ To run the example (predicting the probability of Aston Villa finishing in the t
     - [ ] Finish README
         - [ ] Add more examples for usage as features are added
     - [ ] Improve logo (it's currently terrible)
+  
+# Version 1.0
+- [ ] Add prediction models for corners
+- [ ] Add flexibility to predict matches in other leagues
+- [ ] Add framework to fetch bookies odds and compare with predictions
 
 See the [open issues](https://github.com/jake106/prem_pred/issues) for a full list of proposed features (and known issues).
 
