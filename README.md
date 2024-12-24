@@ -51,7 +51,7 @@
 
 ## About The Project
 
-Football games are unpredictable, there is no way to accurately predict the outcome of multiple games over an entire league, unexpected results will always happen, and thats what makes it such a joy to watch! But what if we could at least do an ok job at prediction? Well the bookmakers can, so let's give it a try.
+There is no way to accurately predict the outcome of multiple football games over an entire league, unexpected results will always happen, and thats what makes it such a joy to watch! But what if we could at least do an ok job at prediction? Well the bookmakers can, so let's give it a try.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
