@@ -64,13 +64,16 @@ def main():
             raise IOError('Model type must be specified with forecast flag')
         print('Projected league table:')
         print(prediction.predict_league_table(simset, fitset))
-        if args.evaluate:
+    if args.evaluate:
+        if not args.all and not args.forecast:
+            raise IOError('Forecast flag must be turned on for evaluate')
+        else:
             prediction.evaluate_pred(simset)
     if args.simulate or args.all:
         print('')
         print('# Simulation:')
         print('')
-        N_sim = 10000
+        N_sim = 500
         if args.simple:
             sim_tables = prediction.simulate_league(simset, fitset, 'simple', team_map, N_sim)
         elif args.extended:

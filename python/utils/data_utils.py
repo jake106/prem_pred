@@ -89,7 +89,13 @@ def add_season_prop(df: pd.DataFrame)->pd.DataFrame:
     df_out = pd.DataFrame({})
     for j in range(start_date, end_date):
         season = [dt.date(j, 8, 1), dt.date(j+1, 7, 31)]
-        this_df = df[(df.Date > season[0]) & (df.Date < season[1])]
+        this_df = df[(df.Date >= season[0]) & (df.Date <= season[1])]
+        this_df = single_season_prop(this_df, season)
+        df_out = pd.concat([df_out, this_df])
+    # Add season prop to current season if not training on full seasons
+    if df.Date.max() > df_out.Date.max():
+        season = [dt.date(j+1, 8, 1), dt.date(j+2, 7, 31)]
+        this_df = df[(df.Date >= season[0]) & (df.Date <= season[1])]
         this_df = single_season_prop(this_df, season)
         df_out = pd.concat([df_out, this_df])
     return df_out

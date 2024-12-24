@@ -134,6 +134,7 @@ def evaluate_pred(data: pd.DataFrame):
     data - Match data with model predictions included as well as actual results to evaluate
            model performance.
     '''
+    # TODO: Automatically only evaluate up to todays date
     observed_totg = data['TotG'].to_numpy()
     expected_totg = data['Home_rate'].to_numpy() + data['Away_rate'].to_numpy()
     rmse = dutils.calc_rmse(expected_totg, observed_totg)
