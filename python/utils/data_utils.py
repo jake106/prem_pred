@@ -8,6 +8,74 @@ from scipy.stats import skellam, poisson
 import plotting
 
 
+def combine_datasets():
+    '''
+    Combine downloaded historical datasets into one ordered dataset for model training.
+    '''
+    datasets = ['2021', '2022', '2023', 'latest_data']
+    dataframes = []
+    for d in datasets:
+        dataframes += [pd.read_csv(f'./data/{d}.csv')]
+    df = pd.DataFrame()
+    for d in dataframes:
+        df = pd.concat([df, d], ignore_index=True)
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+    df.set_index('Date', inplace = True)
+    df.sort_index(inplace=True)
+    df.to_csv('./data/Premier_league_all.csv')
+
+
+def append_future_data():
+    '''Appends future fixtures to historical data for prediction.'''
+    historical = pd.read_csv('./data/Premier_league_all.csv')
+    historical.Time = pd.to_datetime(historical['Time'], format='%H:%M').dt.time
+    historical = historical[['Date', 'Time', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR',
+                             'HTHG', 'HTAG', 'HTR', 'Referee', 'HS', 'AS', 'HST', 'AST', 'HF',
+                             'AF', 'HC', 'AC', 'HY', 'AY', 'HR', 'AR']]
+    future = pd.read_csv('./data/2024-future.csv')
+    future = future[['Date', 'Home Team', 'Away Team']]
+    future['Dateidx'] = pd.to_datetime(future['Date'], dayfirst=True)
+    future['Time'] = future['Dateidx'].dt.time
+    future.set_index('Dateidx', inplace = True)
+    future.sort_index(inplace=True)
+    future.index = future.index.strftime('%Y-%m-%d')
+    future['Date'] = future.index.values
+    # Rename some columns
+    future.rename(mapper={'Home Team': 'HomeTeam', 'Away Team': 'AwayTeam'},
+                  axis = 1, inplace = True)
+    future['HomeTeam'].replace(['Man Utd', 'Spurs'], ["Man United", 'Tottenham'], inplace=True)
+    future['AwayTeam'].replace(['Man Utd', 'Spurs'], ["Man United", 'Tottenham'], inplace=True)
+
+    for f in future.HomeTeam.unique():
+        if f not in historical.HomeTeam.unique():
+            print(f)
+
+    # Need to merge such that all historical data is kept and overwrites the future fixtures data
+    future = future[future['Date'] > historical['Date'].max()]
+    df = pd.merge(historical, future, on=['Date', 'Time', 'HomeTeam', 'AwayTeam'], how='outer')
+    df.set_index('Date', inplace=True)
+    df.sort_index(inplace=True)
+    df.to_csv('./data/data_prem_all.csv')
+
+
+def fetch_latest():
+    '''Fetch latest match results and save as csv. Only works for 2425 season'''
+    # TODO: adapt to current season automatically.
+    hist_url = 'https://www.football-data.co.uk/mmz4281/2425/E0.csv'
+    latest = pd.read_csv(hist_url)
+    latest.to_csv('./data/latest_data.csv', index=False)
+    fut_url = 'https://fixturedownload.com/download/epl-2024-GMTStandardTime.csv'
+    planned = pd.read_csv(fut_url)
+    planned.to_csv('./data/2024-future.csv', index=False)
+
+
+def fetch_all_historical():
+    ''' Fetch all histroical data (back to 2021).'''
+    for season in ['2122', '2223', '2324']:
+        data = pd.read_csv(f'https://www.football-data.co.uk/mmz4281/{season}/E0.csv')
+        data.to_csv(f'./data/20{season[:2]}.csv')
+
+
 def read_data(filename: str)->pd.DataFrame:
     '''Simple function to read data into a pandas dataframe. File extension added in the func.'''
     df = pd.read_csv(f'./data/{filename}.csv')

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import datetime as dt
+import os
 
 import utils.data_utils as dutils
 import models
@@ -28,7 +29,9 @@ def get_args()->argparse.Namespace:
     parser.add_argument('--all', action='store_true',
         help = 'Run entire sequence.')
     parser.add_argument('--evaluate', action = 'store_true',
-        help = 'When actual results of prediction dataset available, run evaluation')
+        help = 'When actual results of prediction dataset available, run evaluation.')
+    parser.add_argument('--nofetch', action = 'store_true',
+        help = 'Flag to not fetch latest match results, and instead only use older data.')
     args = parser.parse_args()
     return args
 
@@ -37,7 +40,17 @@ def main():
     '''A number of simple models to predict the results of football matches.'''
     args = get_args()
     print(args)
-    fitset, simset, team_map = dutils.create_datasets(dt.date(2024, 12, 17))
+    # If no data in data dir, fetch historical data
+    if len(os.listdir('./data/')) < 2:
+        dutils.fetch_all_historical()
+    if not args.nofetch:
+        dutils.fetch_latest()
+        dutils.combine_datasets()
+        dutils.append_future_data()
+        fitset, simset, team_map = dutils.create_datasets(dt.date.today() - dt.timedelta(days=1))
+    else:
+        # Arbitrary date here
+        fitset, simset, team_map = dutils.create_datasets(dt.date(2024, 12, 25))
     if args.plot:
         plotting.gaussian_plot(fitset)
         plotting.plot_seasonality(fitset)

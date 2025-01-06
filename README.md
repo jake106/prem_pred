@@ -72,18 +72,11 @@ This project is written in Python version 3.8.5. The required modules can be ins
 
 ### Installation
 
-Note: Currently step 1 is not required, but as the roadmap progresses it will be.
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/jake106/prem_pred.git
    ```
-4. Enter your API in `config.cfg`
-   ```cfg
-   api_key = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
+2. Change git remote url to avoid accidental pushes to base project
    ```sh
    git remote set-url origin your_github_username/prem_pred
    git remote -v # confirm the changes
@@ -96,9 +89,7 @@ Note: Currently step 1 is not required, but as the roadmap progresses it will be
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-NOTE: Currently there is no script to automate fetching the data (there soon will be!), so data must be downloaded manually from [football-data.co.uk](https://www.football-data.co.uk/englandm.php), and placed in the `data` directory.
-
-Currently all functions of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This can be called as follows:
+Currently all functions of the package can be accessed by running the `main.py` function from the base directory with the appropriate flag. This will automatically download all training data when called for the first time. Functionality is as follows:
 
 ```bash
 usage: main.py [-h] [--plot] [--simple] [--extended] [--forecast] [--simulate] [--all] [--evaluate]
@@ -114,7 +105,8 @@ optional arguments:
               must be specified with forecast flag
   --simulate  Simulate a league table using pre-trained models.
   --all       Run entire sequence.
-  --evaluate  When actual results of prediction dataset available, run evaluation
+  --evaluate  When actual results of prediction dataset available, run evaluation.
+  --nofetch   Flag to not fetch latest match results, and instead only use older data.
 ```
 
 To run the example (predicting the probability of Aston Villa finishing in the top 5 in the 24/25 Premier League), run `main.py` with the `--simulate` flag.
@@ -130,17 +122,17 @@ To run the example (predicting the probability of Aston Villa finishing in the t
 - [ ] Add weights to training data such that previous team performance matters much less than performance in the current league
 - [ ] Add season start and end dates to better capture proportion of way through a season a match is played
 - [ ] Implement the ability to simulate a match result based on a simple query
-- [ ] Automate fetching latest match data and future fixtures
-    - [ ] Then automate evaluations scripts to only evaluate up to latest fetch
+- [ ] Automate evaluations scripts to only evaluate models up to latest data fetch
 - [ ] Improve documentation
     - [ ] Finish README
         - [ ] Add more examples for usage as features are added
-    - [ ] Improve logo (it's currently terrible)
+    - [ ] Improve logo
   
 ### Version 1.0 onward
 - [ ] Add prediction models for corners
 - [ ] Add flexibility to predict matches in other leagues
 - [ ] Add framework to fetch bookies odds and compare with predictions
+- [ ] Automate changing seasons so the model requires less reconfiguring between seasons
 - [ ] Simulate betting strategies
     - [ ] Add backtesting framework
 
