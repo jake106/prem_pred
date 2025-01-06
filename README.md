@@ -180,6 +180,7 @@ Distributed under the GNU General Public License. See `LICENSE.txt` for more inf
 * [README Template](https://github.com/othneildrew/Best-README-Template/tree/main?tab=readme-ov-file)
 * [Double-poisson football score model](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9574.1982.tb00782.x)
 * [Historical football data](https://www.football-data.co.uk/englandm.php)
+* [Future match data](https://fixturedownload.com/results/epl-2024)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
